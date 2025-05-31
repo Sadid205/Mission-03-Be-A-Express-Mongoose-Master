@@ -68,9 +68,15 @@ const server = http.createServer((req,res)=>{
         // const allTodos = fs.readFileSync(filePath,{encoding:"utf-8"})
     }else if(pathname === "/todo/delete-todo" && req.method === "DELETE"){
         const title = url.searchParams.get("title")
+        const allTodos = fs.readFileSync(filePath,{encoding:"utf-8"})
+        const parsedAllTodos = JSON.parse(allTodos)
+        const filteredTodos = parsedAllTodos.filter((todo)=>todo.title!=title)
         
-       
-        // const allTodos = fs.readFileSync(filePath,{encoding:"utf-8"})
+        fs.writeFileSync(filePath,JSON.stringify(filteredTodos,null,2),{encoding:"utf-8"})
+        res.writeHead(200,{
+            "content-type":"application/json"
+        })
+        res.end(JSON.stringify(filteredTodos))
     }else{
         res.end("Route not found")
     }
