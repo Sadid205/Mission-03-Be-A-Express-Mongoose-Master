@@ -28,7 +28,7 @@ app.get('/', (req, res, next) => {
     next();
 }, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log(something);
+        // console.log(something)
         res.send('Welcome to Todos App');
     }
     catch (error) {
@@ -37,13 +37,16 @@ app.get('/', (req, res, next) => {
 }));
 app.get('/error', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log(something);
+        // console.log(something)
         res.send('Welcome to error er duniya');
     }
     catch (error) {
         next(error);
     }
 }));
+app.use((req, res, next) => {
+    res.status(404).json({ message: "Route Not Found" });
+});
 app.use((error, req, res, next) => {
     if (error) {
         console.log("error", error);

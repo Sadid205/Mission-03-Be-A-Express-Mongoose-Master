@@ -20,7 +20,7 @@ app.get('/',(req:Request, res:Response,next:NextFunction) => {
 },
   async (req:Request, res:Response,next:NextFunction) => {
       try{
-        console.log(something)
+        // console.log(something)
         res.send('Welcome to Todos App')
       }catch(error){
         next(error)
@@ -28,13 +28,15 @@ app.get('/',(req:Request, res:Response,next:NextFunction) => {
   })
   app.get('/error',async (req:Request, res:Response,next:NextFunction) => {
       try{
-        console.log(something)
+        // console.log(something)
         res.send('Welcome to error er duniya')
       }catch(error){
         next(error)
       }
   })
-
+  app.use((req:Request,res:Response,next:NextFunction)=>{
+    res.status(404).json({message:"Route Not Found"})
+  })
   app.use((error:any,req:Request,res:Response,next:NextFunction)=>{
     if (error){
       console.log("error",error)
