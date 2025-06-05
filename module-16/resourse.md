@@ -11,3 +11,4 @@ Task Link: https://drive.google.com/file/d/14Bl2h_ctiAmVB-9Xvb0Z9DAuELfDhXv0/vie
 
 
 Solution: https://github.com/Apollo-Level2-Web-Dev/practice-tasks-2-solutions
+
