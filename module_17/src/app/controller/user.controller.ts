@@ -28,13 +28,22 @@ usersRoutes.post("/create-user", async (req: Request, res: Response) => {
     // console.log(password);
     // const user = await User.create(body);
     // body.password = password;
-    const user = new User(body);
-    const password = await (
-      user as unknown as UserInstanceMethods
-    ).hashPassword(body.password);
-    console.log(password);
-    user.password = password;
-    await user.save();
+
+    // Built it and custom instance method
+
+    // const user = new User(body);
+    // const password = await (
+    //   user as unknown as UserInstanceMethods
+    // ).hashPassword(body.password);
+    // console.log(password);
+    // user.password = password;
+    // await user.save();
+
+    // built in and custom static method
+    // const password = await User.hashPassword(body.password);
+    // console.log(password);
+    // body.password = password;
+    const user = await User.create(body);
     res.status(201).json({
       success: true,
       message: "User created successfully",
@@ -49,8 +58,30 @@ usersRoutes.post("/create-user", async (req: Request, res: Response) => {
     });
   }
 });
-usersRoutes.get("", async (req: Request, res: Response) => {
-  const users = await User.find();
+usersRoutes.get("/", async (req: Request, res: Response) => {
+  const userEmail = req.query.email;
+  console.log(userEmail);
+  let users = [];
+  // if (userEmail) {
+  //   users = await User.find({ email: userEmail });
+  // } else {
+  //   users = await User.find();
+  // }
+
+  // sorting
+
+  // users = await User.find().sort({ email: "asc" });
+  // users = await User.find().sort({ email: "ascending" });
+  // users = await User.find().sort({ email: "desc" });
+  // users = await User.find().sort({ email: "descending" });
+  // users = await User.find().sort({ email: 1 });
+  // users = await User.find().sort({ email: -1 });
+
+  // skiping
+  // users = await User.find().skip(5);
+
+  //limiting
+  users = await User.find().limit(2);
   res.status(201).json({
     success: true,
     message: "All users retrieve successfully",
@@ -83,7 +114,8 @@ usersRoutes.patch("/:userId", async (req: Request, res: Response) => {
 });
 usersRoutes.delete("/:userId", async (req: Request, res: Response) => {
   const userId = req.params.userId;
-  const user = await User.findByIdAndDelete(userId);
+  // const user = await User.findByIdAndDelete(userId);
+  const user = await User.findOneAndDelete({ _id: userId });
 
   res.status(201).json({
     success: true,

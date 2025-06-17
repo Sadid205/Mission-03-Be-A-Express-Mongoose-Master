@@ -4,8 +4,10 @@ import {
   IAddress,
   IUser,
   UserInstanceMethods,
+  UserStaticMethods,
 } from "../interfaces/user.interfaces";
 import validator from "validator";
+import { Note } from "./notes.model";
 
 const addressSchema = new Schema<IAddress>(
   {
@@ -16,7 +18,7 @@ const addressSchema = new Schema<IAddress>(
   { _id: false }
 );
 
-const userSchema = new Schema<IUser, Model<IUser>, UserInstanceMethods>(
+const userSchema = new Schema<IUser, UserStaticMethods, UserInstanceMethods>(
   {
     firstName: {
       type: String,
@@ -71,7 +73,12 @@ const userSchema = new Schema<IUser, Model<IUser>, UserInstanceMethods>(
       type: addressSchema,
     },
   },
-  { versionKey: false, timestamps: true }
+  {
+    versionKey: false,
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
 
 userSchema.method("hashPassword", async function (plainPassword: string) {
@@ -79,4 +86,49 @@ userSchema.method("hashPassword", async function (plainPassword: string) {
   return password;
 });
 
-export const User = model<IUser>("User", userSchema);
+userSchema.static("hashPassword", async function (plainPassword: string) {
+  const password = await bcrypt.hash(plainPassword, 10);
+  return password;
+});
+
+// Pre Hooks
+// Document Middleware
+
+userSchema.pre("save", async function (next) {
+  console.log("Inside pre save hook");
+  this.password = await bcrypt.hash(this.password, 10);
+  console.log(this);
+  next();
+});
+
+// Post Hooks
+// Document Middleware
+userSchema.post("save", function (doc, next) {
+  console.log(`${doc.email} has been saved`);
+  next();
+});
+
+// Query Middleware
+
+userSchema.pre("find", function (next) {
+  console.log("inside pre find hook");
+  next();
+  // console.log(doc);
+});
+
+// Post Hoock
+// Query Middleware
+
+userSchema.post("findOneAndDelete", async function (doc, next) {
+  if (doc) {
+    console.log(doc);
+    await Note.deleteMany({ user: doc._id });
+  }
+  next();
+});
+
+userSchema.virtual("fullName").get(function () {
+  return `${this.firstName} ${this.lastName}`;
+});
+
+export const User = model<IUser, UserStaticMethods>("User", userSchema);
